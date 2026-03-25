@@ -63,7 +63,8 @@
            END-EVALUATE
 
            IF PM-RETURN-CODE = 0
-              MOVE PM-PROCESS-DATE TO PM-LAST-MAINT-DATE PM-LAST-ACTION-DATE
+              MOVE PM-PROCESS-DATE TO PM-LAST-MAINT-DATE
+              MOVE PM-PROCESS-DATE TO PM-LAST-ACTION-DATE
               MOVE "SVC001" TO PM-LAST-ACTION-USER
            END-IF
            GOBACK.
@@ -88,8 +89,8 @@
               WHEN "T1001"
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 060 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0001000000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 50000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 010 TO PM-TERM-YEARS
                  MOVE 070 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
@@ -100,8 +101,8 @@
               WHEN "T2001"
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 055 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0002000000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 90000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 020 TO PM-TERM-YEARS
                  MOVE 075 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
@@ -112,8 +113,8 @@
               WHEN "T6501"
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 050 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0001500000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 75000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 065 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
                  MOVE 730 TO PM-REINSTATE-DAYS
@@ -244,7 +245,7 @@
                       ((PM-NEW-SUM-ASSURED - PM-OLD-SUM-ASSURED)
                        / PM-OLD-SUM-ASSURED) * 100
               IF WS-SA-INCREASE-PCT > 25.00 OR
-                 PM-NEW-SUM-ASSURED > 0001000000000.00
+                 PM-NEW-SUM-ASSURED > 25000000000.00
                  MOVE "Y" TO PM-UW-REQUIRED-IND
                  MOVE "PE" TO PM-AMENDMENT-STATUS
                  MOVE "SUM ASSURED INCREASE REQUIRES UW APPROVAL"
@@ -319,7 +320,9 @@
       * SV-801: Remove the first active rider matching rider code.
            PERFORM VARYING WS-RIDER-IDX FROM 1 BY 1
                    UNTIL WS-RIDER-IDX > PM-RIDER-COUNT OR
-                         PM-RIDER-CODE(WS-RIDER-IDX) = "ADB01"
+                      (PM-RIDER-CODE(WS-RIDER-IDX) = "ADB01" AND
+                       PM-RIDER-STATUS(WS-RIDER-IDX) = "A")
+              CONTINUE
            END-PERFORM
 
            IF WS-RIDER-IDX > PM-RIDER-COUNT
@@ -424,8 +427,9 @@
               * PM-OCC-FACTOR
               * PM-UW-FACTOR
            IF PM-FLAT-EXTRA-RATE > 0
-              ADD ((PM-SUM-ASSURED / 1000) * PM-FLAT-EXTRA-RATE)
-                TO PM-BASE-ANNUAL-PREMIUM
+              COMPUTE PM-BASE-ANNUAL-PREMIUM ROUNDED =
+                  PM-BASE-ANNUAL-PREMIUM
+                + ((PM-SUM-ASSURED / 1000) * PM-FLAT-EXTRA-RATE)
            END-IF.
 
        3130-CALCULATE-RIDER-ANNUAL.

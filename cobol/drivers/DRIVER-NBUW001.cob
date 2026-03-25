@@ -1,0 +1,52 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. DRIVENBUW.
+       AUTHOR. OPENAI.
+       REMARKS. DRIVER FOR INTEGRATION TESTS — CALLS NBUW001.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       COPY POLDATA.
+       77  LK-UW-RESULT-CODE        PIC 9(02).
+       77  LK-UW-ERROR-MSG          PIC X(100).
+       01  RPT-LINE                 PIC X(120).
+
+       PROCEDURE DIVISION.
+       MAIN.
+           PERFORM SEED-NB-ISSUE-HAPPY
+           CALL "NBUW001" USING WS-POLICY-MASTER-REC
+                                 LK-UW-RESULT-CODE
+                                 LK-UW-ERROR-MSG
+           STRING "NB_ISSUE_OK|" DELIMITED BY SIZE
+                  LK-UW-RESULT-CODE DELIMITED BY SIZE
+                  "|" DELIMITED BY SIZE
+                  PM-RETURN-CODE DELIMITED BY SIZE
+                  "|" DELIMITED BY SIZE
+                  PM-CONTRACT-STATUS DELIMITED BY SIZE
+                  "|" DELIMITED BY SIZE
+                  PM-MODAL-PREMIUM DELIMITED BY SIZE
+                  "|" DELIMITED BY SIZE
+                  PM-TOTAL-ANNUAL-PREMIUM DELIMITED BY SIZE
+                  INTO RPT-LINE
+           END-STRING
+           DISPLAY FUNCTION TRIM(RPT-LINE TRAILING)
+           STOP RUN.
+
+       SEED-NB-ISSUE-HAPPY.
+      * Fixed process date keeps results stable vs ACCEPT DATE in the callee.
+           INITIALIZE WS-POLICY-MASTER-REC
+           MOVE 20240324 TO PM-PROCESS-DATE
+           MOVE "POLTEST00001" TO PM-POLICY-ID
+           MOVE "SAMPLE INSURED" TO PM-INSURED-NAME
+           MOVE "T1001" TO PM-PLAN-CODE
+           MOVE 35 TO PM-INSURED-AGE-ISSUE
+           MOVE "F" TO PM-INSURED-GENDER
+           MOVE "N" TO PM-SMOKER-IND
+           MOVE 1 TO PM-OCCUPATION-CLASS
+           MOVE "A" TO PM-BILLING-MODE
+           MOVE "N" TO PM-HIGH-RISK-AVOC-IND
+           MOVE ZERO TO PM-FLAT-EXTRA-RATE
+                     PM-RIDER-COUNT
+           MOVE 20000000000.00 TO PM-SUM-ASSURED
+           MOVE ZERO TO LK-UW-RESULT-CODE
+           MOVE SPACES TO LK-UW-ERROR-MSG
+           .

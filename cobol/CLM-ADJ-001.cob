@@ -19,7 +19,7 @@
        WORKING-STORAGE SECTION.
        77  WS-CURR-DATE                 PIC 9(08).
        77  WS-DATE-DIFF                 PIC 9(05) VALUE 0.
-       77  WS-CLAIM-PAYOUT              PIC 9(11)V99 VALUE 0.
+       77  WS-CLAIM-PAYOUT              PIC S9(11)V99 VALUE 0.
        77  WS-RIDER-IDX                 PIC 9(02) VALUE 0.
        77  WS-MISSING-DOCS              PIC X VALUE 'N'.
            88  WS-DOCS-MISSING          VALUE 'Y'.
@@ -82,13 +82,19 @@
        1100-LOAD-PLAN-PARAMETERS.
       * CL-101: Claim rules depend on plan contestable and suicide windows.
            EVALUATE PM-PLAN-CODE
-              WHEN "T1001" OR "T2001" OR "T6501"
+              WHEN "T1001"
+                 MOVE 02 TO PM-CONTESTABLE-YEARS
+                 MOVE 02 TO PM-SUICIDE-EXCL-YEARS
+              WHEN "T2001"
+                 MOVE 02 TO PM-CONTESTABLE-YEARS
+                 MOVE 02 TO PM-SUICIDE-EXCL-YEARS
+              WHEN "T6501"
                  MOVE 02 TO PM-CONTESTABLE-YEARS
                  MOVE 02 TO PM-SUICIDE-EXCL-YEARS
               WHEN OTHER
                  MOVE 'Y' TO WS-REJECT-CLAIM
                  MOVE 11 TO PM-RETURN-CODE
-                 MOVE "UNKNOWN PLAN CODE FOR CLAIM ADJUDICATION"
+                 MOVE "UNKNOWN PLAN FOR CLAIMS"
                    TO PM-RETURN-MESSAGE
            END-EVALUATE.
 
@@ -97,8 +103,8 @@
            IF NOT PM-CLAIM-DEATH
               MOVE 'Y' TO WS-REJECT-CLAIM
               MOVE 12 TO PM-RETURN-CODE
-              MOVE "ONLY DEATH CLAIMS ARE SUPPORTED IN THIS SAMPLE"
-                TO PM-RETURN-MESSAGE
+              MOVE "ONLY DEATH CLAIMS SUPPORTED IN SAMPLE"
+                   TO PM-RETURN-MESSAGE
               EXIT PARAGRAPH
            END-IF
 
@@ -108,7 +114,7 @@
               MOVE 'Y' TO WS-REJECT-CLAIM
               MOVE 13 TO PM-RETURN-CODE
               MOVE "POLICY NOT IN FORCE AT CLAIM INTAKE"
-                TO PM-RETURN-MESSAGE
+                   TO PM-RETURN-MESSAGE
               EXIT PARAGRAPH
            END-IF
 
@@ -117,8 +123,8 @@
               PM-BENEFICIARY-NAME = SPACES
               MOVE 'Y' TO WS-REJECT-CLAIM
               MOVE 14 TO PM-RETURN-CODE
-              MOVE "CLAIM ID, DATE OF DEATH, AND BENEFICIARY ARE REQUIRED"
-                TO PM-RETURN-MESSAGE
+              MOVE "CLAIM ID DOB BENEFICIARY REQUIRED"
+                   TO PM-RETURN-MESSAGE
               EXIT PARAGRAPH
            END-IF
 
@@ -238,7 +244,6 @@
            MOVE PM-PROCESS-DATE TO PM-CLAIM-ADJUDICATE-DATE
                                  PM-CLAIM-SETTLE-DATE
                                  PM-LAST-MAINT-DATE
-           MOVE PM-CLAIM-PAYMENT-AMOUNT TO PM-CLAIM-PAYMENT-AMOUNT
            IF PM-CLAIM-PAYMENT-MODE = SPACES
               MOVE 'A' TO PM-CLAIM-PAYMENT-MODE
            END-IF

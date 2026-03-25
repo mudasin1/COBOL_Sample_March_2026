@@ -1,0 +1,38 @@
+//COBCOMP JOB (ACCT),'COBOL COMPILE',CLASS=A,MSGCLASS=X,NOTIFY=&SYSUID
+//*-------------------------------------------------------------------*
+//* Template: compile one program. Duplicate the step for each source.
+//*  - Point SYSIN at your COBOL source PDS member.
+//*  - SYSLIB must include the PDS where COPY POLDATA resolves.
+//*  - Replace IGY630.SIGYCOMP with your Enterprise COBOL STEPLIB.
+//* Member names (example): NBUW001, SVCBILL, CLMADJ, DRVNBUW, DRVSVC,
+//*                         DRVCLM (match your cataloged names).
+//*-------------------------------------------------------------------*
+// SET HLQ=YOUR.HLQ.COBSAMP
+// SET CPY=YOUR.HLQ.COBSAMP.COPY
+// SET COBSTEPL=IGY710.SIGYCOMP
+//*
+//COB1   EXEC PGM=IGYCRCTL,REGION=0M
+//STEPLIB  DD DISP=SHR,DSN=&COBSTEPL
+//SYSIN    DD DSN=&HLQ..COBOL(NBUW001),DISP=SHR
+//SYSLIB   DD DISP=SHR,DSN=&CPY
+//SYSPRINT DD SYSOUT=*
+//SYSMDECK DD SYSOUT=*
+//SYSLIN   DD DSN=&&OBJMEM,DISP=(MOD,PASS),
+//         SPACE=(TRK,(10,10)),UNIT=SYSDA,
+//         DCB=(RECFM=FB,LRECL=80,BLKSIZE=8000)
+//SYSUT1   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT2   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT3   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT4   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT5   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT6   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT7   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT8   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT9   DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT10  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT11  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT12  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT13  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT14  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//SYSUT15  DD SPACE=(CYL,(5,5)),UNIT=SYSDA
+//*

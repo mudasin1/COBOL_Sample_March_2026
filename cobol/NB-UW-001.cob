@@ -113,8 +113,8 @@
               WHEN PM-PLAN-TERM-10
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 060 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0001000000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 50000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 010 TO PM-TERM-YEARS
                  MOVE 070 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
@@ -127,8 +127,8 @@
               WHEN PM-PLAN-TERM-20
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 055 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0002000000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 90000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 020 TO PM-TERM-YEARS
                  MOVE 075 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
@@ -141,8 +141,8 @@
               WHEN PM-PLAN-TO-65
                  MOVE 018 TO PM-MIN-ISSUE-AGE
                  MOVE 050 TO PM-MAX-ISSUE-AGE
-                 MOVE 0000100000000.00 TO PM-MIN-SUM-ASSURED
-                 MOVE 0001500000000.00 TO PM-MAX-SUM-ASSURED
+                 MOVE 10000000.00 TO PM-MIN-SUM-ASSURED
+                 MOVE 75000000000.00 TO PM-MAX-SUM-ASSURED
                  MOVE 065 TO PM-MATURITY-AGE
                  MOVE 031 TO PM-GRACE-DAYS
                  MOVE 02  TO PM-CONTESTABLE-YEARS
@@ -249,7 +249,7 @@
 
       * NB-303: Older smoker with high face amount is declined.
            IF PM-SMOKER AND PM-INSURED-AGE-ISSUE > 60 AND
-              PM-SUM-ASSURED > 0001000000000.00
+              PM-SUM-ASSURED > 25000000000.00
               MOVE "DP" TO PM-UW-CLASS
            END-IF.
 
@@ -363,8 +363,9 @@
 
       * NB-602: Flat extra applies as an additive amount per thousand.
            IF PM-FLAT-EXTRA-RATE > 0
-              ADD ((PM-SUM-ASSURED / 1000) * PM-FLAT-EXTRA-RATE)
-                TO PM-BASE-ANNUAL-PREMIUM
+              COMPUTE PM-BASE-ANNUAL-PREMIUM ROUNDED =
+                  PM-BASE-ANNUAL-PREMIUM
+                + ((PM-SUM-ASSURED / 1000) * PM-FLAT-EXTRA-RATE)
            END-IF.
 
        1700-CALCULATE-RIDER-PREMIUM.
@@ -378,21 +379,24 @@
                     COMPUTE PM-RIDER-ANNUAL-PREM(WS-RIDER-IDX) ROUNDED =
                            (PM-RIDER-SUM-ASSURED(WS-RIDER-IDX) / 1000)
                          * PM-RIDER-RATE(WS-RIDER-IDX)
+                    MOVE "A" TO PM-RIDER-STATUS(WS-RIDER-IDX)
                  WHEN "WOP01"
       * NB-702: WOP premium set at 6 percent of base annual premium.
                     MOVE 00000.0600 TO PM-RIDER-RATE(WS-RIDER-IDX)
                     COMPUTE PM-RIDER-ANNUAL-PREM(WS-RIDER-IDX) ROUNDED =
                            PM-BASE-ANNUAL-PREMIUM * 0.0600
+                    MOVE "A" TO PM-RIDER-STATUS(WS-RIDER-IDX)
                  WHEN "CI001"
       * NB-703: CI premium priced per thousand on rider SA.
                     MOVE 00001.2500 TO PM-RIDER-RATE(WS-RIDER-IDX)
                     COMPUTE PM-RIDER-ANNUAL-PREM(WS-RIDER-IDX) ROUNDED =
                            (PM-RIDER-SUM-ASSURED(WS-RIDER-IDX) / 1000)
                          * PM-RIDER-RATE(WS-RIDER-IDX)
+                    MOVE "A" TO PM-RIDER-STATUS(WS-RIDER-IDX)
                  WHEN OTHER
                     MOVE ZERO TO PM-RIDER-ANNUAL-PREM(WS-RIDER-IDX)
+                    MOVE SPACE TO PM-RIDER-STATUS(WS-RIDER-IDX)
               END-EVALUATE
-              MOVE "A" TO PM-RIDER-STATUS(WS-RIDER-IDX)
               ADD PM-RIDER-ANNUAL-PREM(WS-RIDER-IDX)
                 TO PM-RIDER-ANNUAL-TOTAL
            END-PERFORM.
@@ -433,7 +437,7 @@
 
        1900-EVALUATE-REFERRALS.
       * NB-901: Large cases require facultative reinsurance review.
-           IF PM-SUM-ASSURED > 0001500000000.00
+           IF PM-SUM-ASSURED > 45000000000.00
               MOVE 'Y' TO WS-REINSURANCE-REFERRAL
            END-IF
 
@@ -449,9 +453,11 @@
                                  PM-EFFECTIVE-DATE
                                  PM-PAID-TO-DATE
                                  PM-LAST-MAINT-DATE
-           COMPUTE WS-DATE-INT = FUNCTION INTEGER-OF-DATE(PM-EFFECTIVE-DATE)
-                               + (PM-TERM-YEARS * 365)
-           MOVE FUNCTION DATE-OF-INTEGER(WS-DATE-INT) TO PM-EXPIRY-DATE
+           COMPUTE WS-DATE-INT =
+               FUNCTION INTEGER-OF-DATE (PM-EFFECTIVE-DATE)
+               + (PM-TERM-YEARS * 365)
+           COMPUTE PM-EXPIRY-DATE =
+               FUNCTION DATE-OF-INTEGER (WS-DATE-INT)
            MOVE "AC" TO PM-CONTRACT-STATUS.
 
        9000-RETURN-ERROR.
