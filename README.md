@@ -1,6 +1,6 @@
-# Majesco Robust COBOL Sample for Business Rule Extraction
+# COBOL Sample for Business Rule Extraction
 
-This sample is designed for Swimm analysis, with explicit rule comments and richer domain logic.
+This sample is designed for Swimm analysis with rich domain logic.
 
 ## Domains covered
 
@@ -71,4 +71,4 @@ This sample is designed for Swimm analysis, with explicit rule comments and rich
 
 ## Note
 
-This sample is optimized for business-rule richness and readability for analysis. It is intentionally more explicit and comment-heavy than production COBOL.
+This sample is optimized for business-rule richness for analysis.
