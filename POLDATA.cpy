@@ -8,9 +8,10 @@
       *   3. Term Policy Claims Processing
       *
       * NOTE:
-      *   This layout is intentionally rich in business attributes so
-      *   Swimm can analyze plan rules, calculations, rates, eligibility,
-      *   servicing decisions, and claims adjudication logic.
+      *   This layout is intentionally rich in business attributes
+      *   in order to test BRE for plan rules, calculations, rates,
+      *   eligibility, servicing decisions, and claims adjudication
+      *   logic.      
       ****************************************************************
        01  WS-POLICY-MASTER-REC.
            05  PM-CONTROL-AREA.
