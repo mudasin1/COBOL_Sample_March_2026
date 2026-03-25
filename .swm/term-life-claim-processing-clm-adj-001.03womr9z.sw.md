@@ -1,5 +1,5 @@
 ---
-title: CLMADJ001 - Term Life Claim Processing (CLM-ADJ-001)
+title: Term Life Claim Processing (CLM-ADJ-001)
 ---
 # Overview
 

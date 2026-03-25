@@ -1,5 +1,5 @@
 ---
-title: SVCBILL001 - Policy Servicing and Amendments
+title: Policy Servicing and Amendments (SVCBILL001)
 ---
 # Overview
 
